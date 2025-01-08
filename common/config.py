@@ -8,6 +8,12 @@ class StaticConfig:
     # API-SUPERNET-AGENT-BACKEND-PREFIX
     PREFIX_SAB_CREATE = "/create"
 
+    # REQUEST-METHODS
+    POST = "POST"
+    GET = "GET"
+    PUT = "PUT"
+    DELETE = "DELETE"
+
 class DynamicConfig(BaseSettings):
     # SUPERNET-AGENT-BACKEND-URL
     SUPERNET_AGENT_BACKEND_URL: str = "http://localhost:8080"

@@ -7,4 +7,4 @@ class GenericAPIRequest(BaseModel):
     headers: Optional[Dict[str, str]] = None  
     params: Optional[Dict[str, Any]] = None  # query parameters （GET req）
     data: Optional[Dict[str, Any]] = None  # form data （POST req）
-    json_data: Optional[Dict[str, Any]] =  Field(default=None, alias="json")  # JSON data（POST req）
+    json_data: Optional[Dict[str, Any]] =  None  # JSON data（POST req）
