@@ -1,6 +1,8 @@
 import httpx
+import json
 from ..model.generic_api_request import GenericAPIRequest
 from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 from common.logger import logger
 
 async def call(request: GenericAPIRequest):
@@ -21,6 +23,51 @@ async def call(request: GenericAPIRequest):
             response.raise_for_status()
             return response.json()
     except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+        error_response = {
+            "status_code": e.response.status_code,
+            "url": str(e.request.url),
+            "method": e.request.method,
+        }
+        
+        try:
+            error_response["error"] = json.loads(e.response.content)
+        except json.JSONDecodeError:
+            error_response["error"] = {
+                "message": e.response.content.decode("utf-8", errors="replace"),
+                "raw_text": e.response.text
+            }
+        
+        logger.error(f"HTTP request failed: {error_response}")
+        
+        return JSONResponse(
+            content=error_response,
+            status_code=e.response.status_code
+        )
     except httpx.RequestError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        error_response = {
+            "status_code": 500,
+            "error_type": e.__class__.__name__,
+            "error_message": str(e),
+            "url": str(getattr(e.request, 'url', 'Unknown')),
+            "method": getattr(e.request, 'method', 'Unknown')
+        }
+        
+        logger.error(f"Request failed: {error_response}")
+        
+        return JSONResponse(
+            content=error_response,
+            status_code=500
+        )
+    except Exception as e:
+        error_response = {
+            "status_code": 500,
+            "error_type": "UnexpectedError",
+            "error_message": str(e)
+        }
+        
+        logger.exception("Unexpected error occurred")
+        
+        return JSONResponse(
+            content=error_response,
+            status_code=500
+        )

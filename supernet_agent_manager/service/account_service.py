@@ -1,9 +1,9 @@
 from common.service.call_generic_api import call
 from common.model.generic_api_request import GenericAPIRequest
+from common.config import static_config, dynamic_config
 from ..model.refresh_token import RefreshToken
 from ..model.login import Login
 from ..config import ManagerConfig
-from common.config import static_config, dynamic_config
 
 class AccountService:
 
