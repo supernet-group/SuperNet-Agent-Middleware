@@ -3,6 +3,7 @@ from common.model.generic_api_request import GenericAPIRequest
 from common.config import static_config, dynamic_config
 from ..config import ManagerConfig
 from ..model.create_agent import CreateAgent
+from ..model.list_agents import ListAgents
 
 class AgentService: 
     @staticmethod
@@ -10,9 +11,26 @@ class AgentService:
         headers = {}
         headers["Authorization"] = access_token
         headers["Content-Type"] = "application/json"
+
+        json_data = create_agent_req.model_dump()
+        json_data["mode"] = "agent-chat"
+
         return await call(GenericAPIRequest(
             method=static_config.POST,
             headers=headers,
-            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS_CREATE,
-            json_data=create_agent_req.model_dump()  
+            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS,
+            json_data=json_data
+        ))
+    
+    @staticmethod
+    async def list_agents(list_agents_req: ListAgents, access_token: str):
+        headers = {}
+        headers["Authorization"] = access_token
+        headers["Content-Type"] = "application/json"
+
+        return await call(GenericAPIRequest(
+            method=static_config.GET,
+            headers=headers,
+            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS,
+            params=list_agents_req.model_dump()
         ))

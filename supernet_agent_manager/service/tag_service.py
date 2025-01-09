@@ -34,7 +34,7 @@ class TagService:
         return await call(GenericAPIRequest(
             method=static_config.GET,
             headers=headers,
-            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_TAGS_LIST,
+            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_TAGS,
             params=tag_req_json
         ))
     
