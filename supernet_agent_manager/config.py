@@ -11,7 +11,6 @@ class ManagerConfig:
     
     # Tag
     API_SAB_TAGS = "/tags"
-    # API_SAB_TAGS_LIST = "/list-tags"
     API_SAB_TAGS_BIND = "/tag-bindings/create"
 
 static_config = ManagerConfig()

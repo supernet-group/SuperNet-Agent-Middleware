@@ -15,6 +15,7 @@ class AgentService:
         json_data = create_agent_req.model_dump()
         json_data["mode"] = "agent-chat"
 
+        # generate base agent
         return await call(GenericAPIRequest(
             method=static_config.POST,
             headers=headers,
@@ -33,4 +34,16 @@ class AgentService:
             headers=headers,
             url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS,
             params=list_agents_req.model_dump()
+        ))
+    
+    @staticmethod
+    async def delete_agent(agent_id: str, access_token: str):
+        headers = {}
+        headers["Authorization"] = access_token
+        headers["Content-Type"] = "application/json"
+
+        return await call(GenericAPIRequest(
+            method=static_config.DELETE,
+            headers=headers,
+            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS + "/" + agent_id
         ))

@@ -6,7 +6,6 @@ from ..model.banding_tag import BindingTag
 from ..config import ManagerConfig
 
 
-
 class TagService:
     @staticmethod
     async def create_tag(tag_req: Tag, access_token: str):
@@ -16,6 +15,7 @@ class TagService:
         headers = {}    
         headers["Authorization"] = f"{access_token}"
         headers["Content-Type"] = "application/json"
+        
         return await call(GenericAPIRequest(
             method=static_config.POST,
             headers=headers,
@@ -31,6 +31,7 @@ class TagService:
         headers = {}    
         headers["Authorization"] = f"{access_token}"
         headers["Content-Type"] = "application/json"
+
         return await call(GenericAPIRequest(
             method=static_config.GET,
             headers=headers,
@@ -43,6 +44,7 @@ class TagService:
         headers = {}    
         headers["Authorization"] = f"{access_token}"
         headers["Content-Type"] = "application/json"
+
         return await call(GenericAPIRequest(
             method=static_config.POST,
             headers=headers,
