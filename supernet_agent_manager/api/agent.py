@@ -9,7 +9,8 @@ from ..service.tag_service import TagService
 
 router = APIRouter()
 
-@router.post("/create-agent")
+# create_agent
+@router.post("/agent/create")
 async def create_agent(create_agent_req: CreateAgent, request: Request):
     """
     Description: Create agent
@@ -48,7 +49,7 @@ async def create_agent(create_agent_req: CreateAgent, request: Request):
     return base_agent_resp
 
 # list_agents
-@router.get("/list-agents")
+@router.get("/agent/page")
 async def list_agents(request: Request):
     """
     Description: List agents
@@ -83,3 +84,20 @@ async def rollback_agent_creation(base_agent_resp, access_token):
     except Exception as delete_error:
         logger.error("Failed to delete agent during rollback: %s. Agent ID: %s", str(delete_error), base_agent_resp.get('id', 'unknown'))
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to rollback agent creation")
+    
+# create agent from template
+@router.post("/agent/create/imports")
+async def create_agent_from_template(create_agent_req: CreateAgent, request: Request):
+    """
+    Description: Create agent from template
+    Args:
+        create_agent_req (CreateAgent): Create agent request
+        request (Request): Http Request object
+    Returns:
+        JSON
+    """
+    if len(create_agent_req.yaml_content) == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="yaml_content is empty")
+    create_agent_req.mode = "yaml-content"
+
+    return await create_agent(create_agent_req, request)

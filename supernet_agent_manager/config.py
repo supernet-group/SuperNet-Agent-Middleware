@@ -8,6 +8,7 @@ class ManagerConfig:
 
     # Agent
     API_SAB_AGENTS = "/apps"
+    API_SAB_AGENTS_IMPORTS = "/apps/imports"
     
     # Tag
     API_SAB_TAGS = "/tags"

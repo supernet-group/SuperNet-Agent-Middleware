@@ -11,16 +11,16 @@ class AgentService:
         headers = {}
         headers["Authorization"] = access_token
         headers["Content-Type"] = "application/json"
-
-        json_data = create_agent_req.model_dump()
-        json_data["mode"] = "agent-chat"
+        url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS
+        if create_agent_req.mode == "yaml-content":
+            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS_IMPORTS
 
         # generate base agent
         return await call(GenericAPIRequest(
             method=static_config.POST,
             headers=headers,
-            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS,
-            json_data=json_data
+            url=url,
+            json_data=create_agent_req.model_dump()
         ))
     
     @staticmethod

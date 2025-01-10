@@ -6,7 +6,7 @@ from ..service.tag_service import TagService
 
 router = APIRouter()
 
-@router.post("/create-tag")
+@router.post("/tag/create")
 async def create_tag(tag_req: Tag, request: Request):
     """
     Description: Create a new tag
@@ -20,7 +20,7 @@ async def create_tag(tag_req: Tag, request: Request):
     access_token = request.headers.get("Authorization")
     return await TagService.create_tag(tag_req, access_token)
     
-@router.get("/get-tags")
+@router.get("/tag/list")
 async def get_tags(request: Request):
     """
     Description: Get all tags
@@ -33,7 +33,7 @@ async def get_tags(request: Request):
     access_token = request.headers.get("Authorization")
     return await TagService.get_tags(access_token)
 
-@router.post("/bind-tag")
+@router.post("/tag/bind")
 async def bind_tag(binding_tag_req: BindingTag, request: Request):
     """
     Description: Bind tag to target
