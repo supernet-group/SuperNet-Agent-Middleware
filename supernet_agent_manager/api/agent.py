@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Request, HTTPException, status
+from fastapi import APIRouter,Request, HTTPException, status, Response
 from fastapi.responses import JSONResponse
 from common.logger import logger
 from ..model.create_agent import CreateAgent
@@ -101,3 +101,50 @@ async def create_agent_from_template(create_agent_req: CreateAgent, request: Req
     create_agent_req.mode = "yaml-content"
 
     return await create_agent(create_agent_req, request)
+
+# delete agent
+@router.delete("/agent/{agent_id}/delete")
+async def delete_agent(agent_id: str, request: Request):
+    """
+    Description: Delete agent
+    Args:
+        agent_id (str): Agent ID
+        request (Request): Http Request object
+    Returns:
+        JSON
+    """
+    
+    return Response(await AgentService.delete_agent(agent_id, request.headers.get("Authorization")))
+
+# explore agents template
+@router.get("/agent/explore")
+async def explore_agents_template(request: Request):
+    pass
+
+# export agent DSL
+@router.get("/agent/{agent_id}/export")
+async def export_agent_DSL(agent_id: str, request: Request):
+    """
+    Description: Export agent DSL
+    Args:
+        agent_id (str): Agent ID
+        request (Request): Http Request object
+    Returns:
+        JSON
+    """
+
+    return Response(await AgentService.export_DSL(agent_id, request.headers.get("Authorization")))
+
+@router.put("/agent/{agent_id}/update")
+async def update_agent(agent_id: str, request: Request):
+    """
+    Description: Update agent
+    Args:
+        agent_id (str): Agent ID
+        request (Request): Http Request object
+    Returns:
+        JSON
+    """
+    
+    return Response(await AgentService.update_agent(agent_id, request.headers.get("Authorization")))
+

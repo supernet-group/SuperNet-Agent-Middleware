@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 from common.logger import logger
 from ..model.tag import Tag
 from ..model.banding_tag import BindingTag
@@ -18,7 +18,7 @@ async def create_tag(tag_req: Tag, request: Request):
     """
     logger.info(f"Creating tag {tag_req.name}")
     access_token = request.headers.get("Authorization")
-    return await TagService.create_tag(tag_req, access_token)
+    return Response(await TagService.create_tag(tag_req, access_token))
     
 @router.get("/tag/list")
 async def get_tags(request: Request):
@@ -31,7 +31,7 @@ async def get_tags(request: Request):
     """
     logger.info("Getting all tags")
     access_token = request.headers.get("Authorization")
-    return await TagService.get_tags(access_token)
+    return Response(await TagService.get_tags(access_token))
 
 @router.post("/tag/bind")
 async def bind_tag(binding_tag_req: BindingTag, request: Request):
@@ -45,4 +45,4 @@ async def bind_tag(binding_tag_req: BindingTag, request: Request):
     """
     logger.info(f"Binding tag {binding_tag_req.tag_ids} to {binding_tag_req.target_id}")
     access_token = request.headers.get("Authorization")
-    return await TagService.bind_tag(binding_tag_req, access_token)
+    return Response(await TagService.bind_tag(binding_tag_req, access_token))

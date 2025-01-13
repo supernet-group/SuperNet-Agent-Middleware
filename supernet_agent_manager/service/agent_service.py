@@ -47,3 +47,31 @@ class AgentService:
             headers=headers,
             url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS + "/" + agent_id
         ))
+    
+    @staticmethod
+    async def export_DSL(agent_id: str, access_token: str):
+        headers = {}
+        headers["Authorization"] = access_token
+
+        params = {}
+        params["include_secret"] = False
+
+        return await call(GenericAPIRequest(
+            method=static_config.GET,
+            headers=headers,
+            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS + "/" + agent_id + "/" + ManagerConfig.API_SAB_AGENTS_EXPORTS,
+            params=params
+        ))
+    
+    @staticmethod
+    async def update_agent(agent_id: str, update_agent_req: CreateAgent, access_token: str):
+        headers = {}
+        headers["Authorization"] = access_token
+        headers["Content-Type"] = "application/json"
+
+        return await call(GenericAPIRequest(
+            method=static_config.PUT,
+            headers=headers,
+            url=dynamic_config.SUPERNET_AGENT_BACKEND_URL + ManagerConfig.API_SAB_AGENTS + "/" + agent_id,
+            json_data=update_agent_req.model_dump()
+        ))
