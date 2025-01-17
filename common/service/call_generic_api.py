@@ -1,8 +1,8 @@
 import httpx
 import json
 from ..model.generic_api_request import GenericAPIRequest
-from fastapi import HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 from common.logger import logger
 
 async def call(request: GenericAPIRequest):
@@ -71,10 +71,10 @@ async def call(request: GenericAPIRequest):
             content=error_response,
             status_code=500
         )
-    
+
 async def stream_call(request: GenericAPIRequest):
     """
-    Support streaming response
+    Unified streaming response for both success and error cases
     """
     logger.info(f"Calling {request.url} with method {request.method} and headers {request.headers} and params {request.params} and data {request.data} and json {request.json_data}")
 
@@ -87,18 +87,23 @@ async def stream_call(request: GenericAPIRequest):
                 params=request.params,
                 data=request.data,
                 json=request.json_data,
-                timeout=10.0 
+                timeout=10.0
             ) as response:
+                await response.aread()
                 response.raise_for_status()
 
                 async def generate():
-                    async for chunk in response.aiter_bytes():
-                        yield chunk
+                    try:
+                        async for chunk in response.aiter_bytes():
+                            yield chunk
+                    except httpx.StreamClosed:
+                        logger.warning("Stream closed by client or server")
+                        yield b"Stream closed"
 
                 return StreamingResponse(
                     generate(),
-                    media_type="text/event-stream",  
-                    headers=dict(response.headers) 
+                    media_type="text/event-stream",
+                    headers=dict(response.headers)
                 )
 
     except httpx.HTTPStatusError as e:
@@ -106,20 +111,17 @@ async def stream_call(request: GenericAPIRequest):
             "status_code": e.response.status_code,
             "url": str(e.request.url),
             "method": e.request.method,
+            "error": json.loads(e.response.content) if e.response.content else {"message": "Unknown error"}
         }
-
-        try:
-            error_response["error"] = json.loads(e.response.content)
-        except json.JSONDecodeError:
-            error_response["error"] = {
-                "message": e.response.content.decode("utf-8", errors="replace"),
-                "raw_text": e.response.text
-            }
 
         logger.error(f"HTTP request failed: {error_response}")
 
-        return JSONResponse(
-            content=error_response,
+        async def generate_error():
+            yield json.dumps(error_response).encode("utf-8")
+
+        return StreamingResponse(
+            generate_error(),
+            media_type="application/json",
             status_code=e.response.status_code
         )
 
@@ -134,8 +136,12 @@ async def stream_call(request: GenericAPIRequest):
 
         logger.error(f"Request failed: {error_response}")
 
-        return JSONResponse(
-            content=error_response,
+        async def generate_error():
+            yield json.dumps(error_response).encode("utf-8")
+
+        return StreamingResponse(
+            generate_error(),
+            media_type="application/json",
             status_code=500
         )
 
@@ -148,7 +154,11 @@ async def stream_call(request: GenericAPIRequest):
 
         logger.exception("Unexpected error occurred")
 
-        return JSONResponse(
-            content=error_response,
+        async def generate_error():
+            yield json.dumps(error_response).encode("utf-8")
+
+        return StreamingResponse(
+            generate_error(),
+            media_type="application/json",
             status_code=500
         )

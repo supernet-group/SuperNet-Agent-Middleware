@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 from common.logger import logger
 from ..model.refresh_token import RefreshToken
 from ..model.login import Login
@@ -17,7 +18,7 @@ async def refresh_token(refresh_token_req: RefreshToken):
         JSON
     """
     logger.info("refresh_token_req: %s", refresh_token_req)
-    return Response(await AccountService.refresh_token(refresh_token_req))
+    return JSONResponse(await AccountService.refresh_token(refresh_token_req))
 
 # login (get access token and refresh token)
 @router.post("/login")
@@ -30,5 +31,5 @@ async def login(login: Login):
         JSON
     """
     logger.info("login: %s", login)
-    return Response(await AccountService.login(login))
+    return JSONResponse(await AccountService.login(login))
 

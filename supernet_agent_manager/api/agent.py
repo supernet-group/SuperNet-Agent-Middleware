@@ -100,7 +100,7 @@ async def create_agent_from_template(create_agent_req: CreateAgent, request: Req
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="yaml_content is empty")
     create_agent_req.mode = "yaml-content"
 
-    return await create_agent(create_agent_req, request)
+    return JSONResponse(await create_agent(create_agent_req, request))
 
 # delete agent
 @router.delete("/agent/{agent_id}/delete")
@@ -114,9 +114,9 @@ async def delete_agent(agent_id: str, request: Request):
         JSON
     """
     
-    return Response(await AgentService.delete_agent(agent_id, request.headers.get("Authorization")))
+    return JSONResponse(await AgentService.delete_agent(agent_id, request.headers.get("Authorization")))
 
-# explore agents template
+# explore agents template TODO: need to test
 @router.get("/agent/explore")
 async def explore_agents_template(request: Request):
     pass
@@ -133,7 +133,7 @@ async def export_agent_DSL(agent_id: str, request: Request):
         JSON
     """
 
-    return Response(await AgentService.export_DSL(agent_id, request.headers.get("Authorization")))
+    return JSONResponse(await AgentService.export_DSL(agent_id, request.headers.get("Authorization")))
 
 @router.put("/agent/{agent_id}/update")
 async def update_agent(agent_id: str, request: Request):
@@ -146,5 +146,5 @@ async def update_agent(agent_id: str, request: Request):
         JSON
     """
     
-    return Response(await AgentService.update_agent(agent_id, request.headers.get("Authorization")))
+    return JSONResponse(await AgentService.update_agent(agent_id, request.headers.get("Authorization")))
 
